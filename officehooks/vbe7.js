@@ -89,19 +89,20 @@ function dumpWSTR(address)
 
 var loadedModules = {}
 var hookedFunctions = {}
-function hookFunction(dllName, name) {
-    var functionName = dllName + "!" + name
-    console.log("hookFunction " + functionName);
-    var addr = ptr(Module.findExportByName(dllName, name))
 
+function hookFunction(dllName, name) {
+    dllName = dllName.split('.')[0]
+    var functionName = dllName + "!" + name
     if (functionName in hookedFunctions) {
         return
     }
-
-    hookedFunctions[functionName] = 1
+    
+    console.log("hookFunction " + functionName);
+    var addr = ptr(Module.findExportByName(dllName, name))
     if (!(dllName in loadedModules)) {
-        console.log("DebugSymbol.loadModule " + dllName);
+        console.log("DebugSymbol.loadModule " + functionName);
         DebugSymbol.loadModule(dllName)
+        console.log("DebugSymbol.loadModule finished" + functionName);
         loadedModules[dllName] = 1
     }
 
@@ -114,6 +115,7 @@ function hookFunction(dllName, name) {
     if (addr.isNull())
         return
 
+    hookedFunctions[functionName] = 1
     console.log(functionName + ': ' + addr);
 
     Interceptor.attach(addr, {
@@ -156,12 +158,14 @@ function hookFunction(dllName, name) {
                 for(i = 0; i < modules.length; i++) {
                     if ( functionAddress >=  modules[i].base &&  functionAddress <= modules[i].base.add(modules[i].size))
                     {
-                        console.log(" " + modules[i].name + ": " + modules[i].base + " " + modules[i].size)
+                        console.log(" " + modules[i].name + ": " + modules[i].base + " " + modules[i].size + " " + modules[i].path)
 
-                        if (!(modules[i].name in loadedModules)) {
-                            console.log("  DebugSymbol.loadModule " + modules[i].name);
-                            DebugSymbol.loadModule(modules[i].name)
-                            loadedModules[modules[i].name] = 1
+                        var modName = modules[i].path
+                        if (!(modName in loadedModules)) {                            
+                            console.log("  DebugSymbol.loadModule " + modName);
+                            var loadedModuleBase = DebugSymbol.loadModule(modName)
+                            console.log("  DebugSymbol.loadModule loadedModuleBase: " + loadedModuleBase);                            
+                            loadedModules[modName] = 1
                         }
                         break
                     }
