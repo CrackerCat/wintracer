@@ -179,6 +179,14 @@ function hookFunction(dllName, name) {
                     console.log(' functionName:' + functionName);
                 }
                 dumpAddress(functionAddress);
+                
+                var currentAddress = functionAddress
+                for(var i = 0; i < 10; i++)
+                {
+                    var instruction = Instruction.parse(currentAddress)
+                    console.log(instruction.address + ': ' + instruction.mnemonic + ' ' + instruction.opStr)
+                    currentAddress = instruction.next
+                }
             }
             else
             {
