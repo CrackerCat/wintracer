@@ -120,27 +120,25 @@ function hookFunction(dllName, name) {
 
     Interceptor.attach(addr, {
         onEnter: function (args) {
-            if (name == '__vbaStrCat')
-            {
+            if (name == '__vbaStrCat') {
                 // console.log('[+] ' + name);
                 // dumpBSTR(args[0]);
                 // dumpBSTR(args[1]);
-            }
-            else if (name == '__vbaStrComp')
-            {
+            } else if (name == '__vbaStrComp') {
                 console.log('[+] ' + name);
                 console.log(ptr(args[1]).readUtf16String())
                 console.log(ptr(args[2]).readUtf16String())
-            }
-            else if (name == 'rtcCreateObject2')
-            {
+            } else if (name == 'rtcCreateObject2') {
                 console.log('[+] ' + name);
                 dumpAddress(args[0]);
                 dumpBSTR(args[1]);
                 console.log(ptr(args[2]).readUtf16String())
-            }
-            else if (name == 'DispCallFunc')
-            {
+            } else if (name == 'rtcShell') {
+                var variantArg = ptr(args[0])
+                dumpAddress(variantArg);
+                var bstrPtr = ptr(variantArg.add(8).readULong())
+                dumpBSTR(bstrPtr);
+            } else if (name == 'DispCallFunc') {
                 console.log('[+] ' + name);
                 var pvInstance = args[0]
                 var oVft = args[1]
@@ -156,8 +154,7 @@ function hookFunction(dllName, name) {
 
                 var i
                 for(i = 0; i < modules.length; i++) {
-                    if ( functionAddress >=  modules[i].base &&  functionAddress <= modules[i].base.add(modules[i].size))
-                    {
+                    if ( functionAddress >=  modules[i].base &&  functionAddress <= modules[i].base.add(modules[i].size)) {
                         console.log(" " + modules[i].name + ": " + modules[i].base + " " + modules[i].size + " " + modules[i].path)
 
                         var modName = modules[i].path
@@ -174,22 +171,19 @@ function hookFunction(dllName, name) {
                 console.log(' functionAddress:' + functionAddress);
                 var functionName = DebugSymbol.fromAddress(functionAddress)
 
-                if (functionName)
-                {
+                if (functionName) {
                     console.log(' functionName:' + functionName);
                 }
+
                 dumpAddress(functionAddress);
                 
                 var currentAddress = functionAddress
-                for(var i = 0; i < 10; i++)
-                {
+                for(var i = 0; i < 10; i++) {
                     var instruction = Instruction.parse(currentAddress)
                     console.log(instruction.address + ': ' + instruction.mnemonic + ' ' + instruction.opStr)
                     currentAddress = instruction.next
                 }
-            }
-            else
-            {
+            } else {
                 console.log('[+] ' + name);
             }
         },
@@ -197,7 +191,7 @@ function hookFunction(dllName, name) {
         onLeave: function (retval) {
             if (name == '__vbaStrCat')
             {
-                // dumpBSTR(retval);
+                dumpBSTR(retval);
             }else if (name == 'rtcCreateObject2')
             {
                 console.log('[+] ' + name);
@@ -250,7 +244,7 @@ function hookLoadLibrary(dllName, name) {
                 {
                     var i;
                     for (i = 0; i < rtcFunctions.length; i++) {
-                        // hookFunction (this.target_dllName, rtcFunctions[i]);
+                        hookFunction (this.target_dllName, rtcFunctions[i]);
                     }
                 }else if (this.target_dllName == 'OLEAUT32.DLL') {
                     var i;
@@ -277,7 +271,7 @@ hookLoadLibrary("KERNEL32", "LoadLibraryW");
 
 var i;
 for (i = 0; i < rtcFunctions.length; i++) {
-    // hookFunction ("VBE7.DLL", rtcFunctions[i]);
+    hookFunction ("VBE7.DLL", rtcFunctions[i]);
 }
 var j;
 for (j = 0; j < oleAutFunctions.length; j++) {
