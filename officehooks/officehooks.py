@@ -13,13 +13,12 @@ class Monitor:
             pathname = os.path.join(script_folder, filename)
             with open(pathname, 'r') as fd:
                 script_text += fd.read()
-
         script = self.session.create_script(script_text)
         script.on('message', self.on_message)
         script.load()
         print("[!] Ctrl+D on UNIX, Ctrl+Z on Windows/cmd.exe to detach from instrumented program.\n\n")
         sys.stdin.read()
-        session.detach()
+        self.session.detach()
 
     def on_message(self, message, data):
         print("[%s] => %s" % (message, data))
