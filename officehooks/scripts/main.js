@@ -64,8 +64,10 @@ function hookLoadLibraryExW(moduleName) {
 var hookMap = {
     'VBE7.DLL': [hookRtcShell, hookRtcCreateObject2, hookVBAStrCat, hookVBAStrComp],
     'OLEAUT32.DLL': [hookDispCall],
-    'kernel32.dll': [hookLoadLibraryA, hookLoadLibraryExA, hookLoadLibraryW, hookLoadLibraryExW, hookVirtualAlloc],
-    'kernelbase.dll': [hookLoadLibraryA, hookLoadLibraryExA, hookLoadLibraryW, hookLoadLibraryExW, hookVirtualAlloc]
+    'kernel32.dll': [hookLoadLibraryA, hookLoadLibraryExA, hookLoadLibraryW, hookLoadLibraryExW, 
+                    hookVirtualAlloc, hookCreateFileW, hookReadFile],
+    'kernelbase.dll': [hookLoadLibraryA, hookLoadLibraryExA, hookLoadLibraryW, hookLoadLibraryExW, 
+                    hookVirtualAlloc, hookCreateFileW, hookReadFile]
 }
 
 for(var dllName in hookMap) {
