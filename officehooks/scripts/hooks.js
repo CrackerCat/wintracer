@@ -9,25 +9,25 @@ function resolveName(dllName, name) {
         return resolvedAddresses[functionName]
     }
 
-    send("resolveName " + functionName);
-    send("Module.findExportByName " + dllName + " " + name);
+    console.log("resolveName " + functionName);
+    console.log("Module.findExportByName " + dllName + " " + name);
     var addr = Module.findExportByName(dllName, name)
 
     if (!addr || addr.isNull()) {
         if (!(dllName in loadedModules)) {
-            send(" DebugSymbol.loadModule " + dllName);
+            console.log(" DebugSymbol.loadModule " + dllName);
             var loadModuleResult = DebugSymbol.loadModule(dllName)
-            send(" DebugSymbol.loadModule finished: " + loadModuleResult);
+            console.log(" DebugSymbol.loadModule finished: " + loadModuleResult);
             loadedModules[dllName] = 1
         }
 
         try {
-            send(" DebugSymbol.getFunctionByName: " + functionName);
+            console.log(" DebugSymbol.getFunctionByName: " + functionName);
             addr = DebugSymbol.getFunctionByName(name)
-            send(" DebugSymbol.getFunctionByName: addr = " + addr);
+            console.log(" DebugSymbol.getFunctionByName: addr = " + addr);
         }
         catch(err) {
-            send(" DebugSymbol.getFunctionByName: Exception")
+            console.log(" DebugSymbol.getFunctionByName: Exception")
         }
     }
 
@@ -50,6 +50,6 @@ function hookFunction(dllName, name, callback) {
         return
     }
 
-    send('Interceptor.attach: ' + functionName + '@' + addr);
+    console.log('Interceptor.attach: ' + functionName + '@' + addr);
     Interceptor.attach(addr, callback)
 }

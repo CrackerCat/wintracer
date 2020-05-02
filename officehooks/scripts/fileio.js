@@ -8,18 +8,18 @@ function hookReadFile(moduleName) {
             //  LPDWORD      lpNumberOfBytesRead,
             //  LPOVERLAPPED lpOverlapped
             //);
-            send('[+] ReadFile');
-            send('  hFile: ' + args[0]);
-            send('  lpBuffer: ' + args[1]);
-            send('  nNumberOfBytesToRead: ' + args[2]);
-            send('  lpNumberOfBytesRead: ' + args[3]);
-            send('  lpOverlapped: ' + args[4]);
+            console.log('[+] ReadFile');
+            console.log('  hFile: ' + args[0]);
+            console.log('  lpBuffer: ' + args[1]);
+            console.log('  nNumberOfBytesToRead: ' + args[2]);
+            console.log('  lpNumberOfBytesRead: ' + args[3]);
+            console.log('  lpOverlapped: ' + args[4]);
 
             this.lpBuffer = args[1];
             this.lpNumberOfBytesRead = args[3]
         },
         onLeave: function (retval) {
-            send('[+] ReadFile returns: ' + retval);
+            console.log('[+] ReadFile returns: ' + retval);
             dumpAddress(this.lpBuffer);
         }
     })
@@ -37,20 +37,20 @@ function hookCreateFileW(moduleName) {
             //     DWORD                 dwFlagsAndAttributes,
             //     HANDLE                hTemplateFile
             //   );
-            send('[+] CreateFileW');
-            send('  lpFileName: ' + ptr(args[0]).readUtf16String());
-            send('  dwDesiredAccess: ' + args[1]);
-            send('  dwShareMode: ' + args[2]);
-            send('  lpSecurityAttributes: ' + args[3]);
-            send('  dwCreationDisposition: ' + args[4]);
-            send('  dwFlagsAndAttributes: ' + args[5]);
-            send('  hTemplateFile: ' + args[6]);
+            console.log('[+] CreateFileW');
+            console.log('  lpFileName: ' + ptr(args[0]).readUtf16String());
+            console.log('  dwDesiredAccess: ' + args[1]);
+            console.log('  dwShareMode: ' + args[2]);
+            console.log('  lpSecurityAttributes: ' + args[3]);
+            console.log('  dwCreationDisposition: ' + args[4]);
+            console.log('  dwFlagsAndAttributes: ' + args[5]);
+            console.log('  hTemplateFile: ' + args[6]);
 
             this.lpBuffer = args[1];
             this.lpNumberOfBytesRead = args[3]
         },
         onLeave: function (retval) {
-            send('[+] CreateFileW returns: ' + retval);
+            console.log('[+] CreateFileW returns: ' + retval);
         }
     })
 }

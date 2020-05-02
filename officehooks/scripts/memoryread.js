@@ -1,23 +1,23 @@
 function dumpAddress(address)
 {
-    send('[+] address: ' + address);
+    console.log('[+] address: ' + address);
 
     if (address.isNull())
         return
     var data = ptr(address).readByteArray(50);
-    send(hexdump(data, { offset: 0, length: 50, header: true, ansi: false }));
+    console.log(hexdump(data, { offset: 0, length: 50, header: true, ansi: false }));
 }
 
 function dumpBSTR(address) {
-    send('[+] address: ' + address);
+    console.log('[+] address: ' + address);
 
     if (address.isNull())
         return
 
     var length = ptr(address-4).readULong(4);
-    send("length: " + length)
+    console.log("length: " + length)
     var data = ptr(address).readByteArray(length);
-    send(hexdump(data, { offset: 0, length: length, header: true, ansi: false }));
+    console.log(hexdump(data, { offset: 0, length: length, header: true, ansi: false }));
 }
 
 function getString(address)
@@ -50,7 +50,7 @@ function getString(address)
         offset += data.length
     }
 
-    send("dataString: " + dataString)
+    console.log("dataString: " + dataString)
     return dataString;
 }
 
@@ -84,6 +84,6 @@ function dumpWSTR(address)
         offset += data.length
     }
 
-    send("dataString: " + dataString)
+    console.log("dataString: " + dataString)
     return dataString;
 }
