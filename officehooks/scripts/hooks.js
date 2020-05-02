@@ -53,3 +53,73 @@ function hookFunction(dllName, name, callback) {
     console.log('Interceptor.attach: ' + functionName + '@' + addr);
     Interceptor.attach(addr, callback)
 }
+
+function loadDLLHooks(dllName) {
+    if (dllName in hookMap) {
+
+        try {
+            if (Module.getBaseAddress(dllName).isNull()) {
+                return
+            }
+        }
+        catch(err)
+        {
+            return
+        }
+
+        // console.log("loadDLLHooks dllName: " + dllName)
+        var calls = hookMap[dllName]
+        for(var i = 0 ; i < calls.length; i++) {
+            // console.log("  calls[" + i + "]: " + calls[i])
+            calls[i](dllName)
+        }
+    }
+}
+
+function hookLoadLibraryA(moduleName) {
+    hookFunction(moduleName, "LoadLibraryA", {
+        onEnter: function (args) {
+            this.targetDLLName = ptr(args[0]).readCString()
+            console.log("[+] LoadLibraryA: " + this.targetDLLName)
+        },
+        onLeave: function (retval) {
+            loadDLLHooks(this.targetDLLName)               
+        }
+    })
+}
+
+function hookLoadLibraryExA(moduleName) {
+    hookFunction(moduleName, "LoadLibraryExA", {
+        onEnter: function (args) {
+            this.targetDLLName = ptr(args[0]).readCString()
+            console.log("[+] LoadLibraryExA: " + this.targetDLLName)
+        },
+        onLeave: function (retval) {
+            loadDLLHooks(this.targetDLLName)               
+        }
+    })
+}
+
+function hookLoadLibraryW(moduleName) {
+    hookFunction(moduleName, "LoadLibraryW", {
+        onEnter: function (args) {
+            this.targetDLLName = ptr(args[0]).readUtf16String()
+            console.log("[+] LoadLibraryW: " + this.targetDLLName)            
+        },
+        onLeave: function (retval) {
+            loadDLLHooks(this.targetDLLName)               
+        }
+    })
+}
+
+function hookLoadLibraryExW(moduleName) {
+    hookFunction(moduleName, "LoadLibraryExW", {
+        onEnter: function (args) {
+            this.targetDLLName = ptr(args[0]).readUtf16String()
+            console.log("[+] LoadLibraryExW: " + this.targetDLLName)            
+        },
+        onLeave: function (retval) {
+            loadDLLHooks(this.targetDLLName)               
+        }
+    })
+}
