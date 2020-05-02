@@ -1,5 +1,16 @@
 function loadDLLHooks(dllName) {
     if (dllName in hookMap) {
+
+        try {
+            if (Module.getBaseAddress(dllName).isNull()) {
+                return
+            }
+        }
+        catch(err)
+        {
+            return
+        }
+
         // console.log("loadDLLHooks dllName: " + dllName)
         var calls = hookMap[dllName]
         for(var i = 0 ; i < calls.length; i++) {
@@ -65,9 +76,9 @@ var hookMap = {
     'VBE7.DLL': [hookRtcShell, hookRtcCreateObject2, hookVBAStrCat, hookVBAStrComp],
     'OLEAUT32.DLL': [hookDispCall],
     'kernel32.dll': [hookLoadLibraryA, hookLoadLibraryExA, hookLoadLibraryW, hookLoadLibraryExW, 
-                    hookVirtualAlloc, hookCreateFileW, hookReadFile],
+                    hookVirtualAlloc, hookCreateFileW, ], // hookReadFile
     'kernelbase.dll': [hookLoadLibraryA, hookLoadLibraryExA, hookLoadLibraryW, hookLoadLibraryExW, 
-                    hookVirtualAlloc, hookCreateFileW, hookReadFile]
+                    hookVirtualAlloc, hookCreateFileW, ] // hookReadFile
 }
 
 for(var dllName in hookMap) {
