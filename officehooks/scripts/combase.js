@@ -77,7 +77,6 @@ function hookCRpcResolverCreateInstance(moduleName) {
         onEnter: function (args) {
             console.log("[+] CRpcResolver::CreateInstance")
             console.log(" ParamAddress: " + args[0])
-      
         }
     })
 }
