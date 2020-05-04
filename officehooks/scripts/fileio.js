@@ -20,7 +20,7 @@ function hookReadFile(moduleName) {
         },
         onLeave: function (retval) {
             console.log('[+] ReadFile returns: ' + retval);
-            dumpAddress(this.lpBuffer);
+            // dumpAddress(this.lpBuffer);
         }
     })
 }

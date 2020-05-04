@@ -8,6 +8,32 @@ function dumpAddress(address)
     console.log(hexdump(data, { offset: 0, length: 50, header: true, ansi: false }));
 }
 
+function dumpBytes(address, length) {
+    if (address.isNull())
+        return
+    var data = ptr(address).readByteArray(length);
+    console.log(hexdump(data, { offset: 0, length: length, header: true, ansi: false }));
+}
+
+function dumpSymbols(address, count) {
+    if (address.isNull())
+        return
+
+    var currentAddress = address
+    for(var i = 0; i < count; i++) {
+        var readAddress = ptr(currentAddress).readPointer();
+        readAddress = ptr(readAddress)
+        var symbolInformation = DebugSymbol.fromAddress(readAddress)
+
+        if (symbolInformation && symbolInformation.name) {
+            console.log(currentAddress + ":\t" + readAddress + " " + symbolInformation.name)
+        }else {
+            console.log(currentAddress + ":\t" + readAddress)
+        }
+        currentAddress = currentAddress.add(4)
+    }
+}
+
 function dumpBSTR(address) {
     console.log('[+] address: ' + address);
 

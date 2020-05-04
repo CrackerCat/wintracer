@@ -23,7 +23,7 @@ function resolveName(dllName, name) {
 
         try {
             console.log(" DebugSymbol.getFunctionByName: " + functionName);
-            addr = DebugSymbol.getFunctionByName(name)
+            addr = DebugSymbol.getFunctionByName(moduleName + '!' + name)
             console.log(" DebugSymbol.getFunctionByName: addr = " + addr);
         }
         catch(err) {
@@ -122,4 +122,50 @@ function hookLoadLibraryExW(moduleName) {
             loadDLLHooks(this.targetDLLName)               
         }
     })
+}
+
+function hookPointers(address, count) {
+    if (address.isNull())
+        return
+
+    var currentAddress = address
+    for(var i = 0; i < count; i++) {
+        var readAddress = ptr(currentAddress).readPointer();
+        readAddress = ptr(readAddress)
+        var symbolInformation = DebugSymbol.fromAddress(readAddress)
+
+        var name = readAddress
+        if (symbolInformation && symbolInformation.name) {
+            name = symbolInformation.name
+        }
+
+        console.log('Hooking ' + readAddress + ": " + name)
+
+        try {
+            Interceptor.attach(readAddress, {
+                onEnter: function (args) {
+                    console.log('[+] ' + name)
+                }
+            })
+        }
+        catch(err) {}
+        currentAddress = currentAddress.add(4)
+    }
+}
+
+function hookFunctionNames(moduleName, funcNames) {
+    for(var i = 0; i < funcNames.length; i++) {
+        var funcName = funcNames[i]
+
+        try {
+            hookFunction(moduleName, funcName, {
+                onEnter: function (args) {
+                    console.log("[+] " + funcName)
+                }
+            })
+            console.log("Hooked " + funcName)
+        } catch(err) {
+            console.log("Failed to hook " + funcName)
+        }
+    }
 }
