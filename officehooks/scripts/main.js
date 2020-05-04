@@ -1,6 +1,13 @@
 var hookMap = {
-    // 'VBE7.DLL': [hookRtcShell, hookRtcCreateObject2, hookVBAStrCat, hookVBAStrComp],
-    // 'OLEAUT32.DLL': [hookDispCall],
+    'VBE7.DLL': [
+        hookRtcShell,
+        hookRtcCreateObject2,
+        hookVBAStrCat,
+        hookVBAStrComp
+    ],
+    'OLEAUT32.DLL': [
+        hookDispCall
+    ],
     'kernel32.dll': [
         hookLoadLibraryA,
         hookLoadLibraryExA,
@@ -23,8 +30,16 @@ var hookMap = {
         // hookVirtualAlloc,
         // hookCreateFileW,
     ],
-    // 'ole32': [hookCoCreateInstanceEx, hookCoCreateInstance, hookCDefObjectInitFromData, 
-        // hookCDefObjectLoad, hookCDefObjectRun, hookReadOleStg, hookStRead], // hookOLE32Funcs
+    'ole32': [
+        hookCoCreateInstanceEx,
+        hookCoCreateInstance,
+        hookCDefObjectInitFromData, 
+        // hookCDefObjectLoad,
+        //  hookCDefObjectRun,
+        //  hookReadOleStg,
+        //  hookStRead,
+        // hookOLE32Funcs
+    ],
     "rpcrt4": [
         hookLRPC_SCALL_LRPC_SCALL, 
         hookNdrClientInitializeNew,
@@ -33,12 +48,20 @@ var hookMap = {
         hookI_RpcBindingCreateNP,
         hookRpcBindingFromStringBindingA,
         hookRpcBindingFromStringBindingW,
-        hookI_RpcSend, hookRPCFunctions,
+        hookI_RpcSend,
+        hookRPCFunctions,
         hookLRPC_ADDRES_HandleRequest,
         hookLRPC_ADDRES_AlpcSend
     ],
-    // "combase": [hookCStdIdentityCreateServer, hookObjectStublessClient],
-    // "coml2": [hookCExposedStreamRead] // hookComl2Functions, hookCExposedStreamMethods
+    "combase": [
+        hookCStdIdentityCreateServer,
+        hookObjectStublessClient
+    ],
+    "coml2": [
+        // hookCExposedStreamRead,
+        // hookComl2Functions,
+        // hookCExposedStreamMethods
+    ],
     "ntdll": [
         hookNtAlpcConnectPort,
         hookNtSecureConnectPort,
