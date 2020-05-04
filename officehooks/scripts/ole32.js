@@ -169,17 +169,12 @@ function hookStRead(moduleName) {
             var pStm = this.context['ecx']
             this.pvBuffer = this.context['edx']
             this.ulcb = args[0]
-
             console.log(" pStm: " + pStm)
-            dumpSymbols(pStm, 0x100)
-
-            console.log(" *pStm: " + ptr(pStm.readPointer()))
-            dumpSymbols(ptr(pStm.readPointer()), 0x100)
-            console.log(" pvBuffer: " + this.pvBuffer)             = 
+            console.log(" pvBuffer: " + this.pvBuffer)
             console.log(" ulcb: " + this.ulcb)
         },
         onLeave: function (retval) {
-            dumpBytes(ptr(this.pvBuffer), 0x500)
+            // dumpBytes(ptr(this.pvBuffer), 0x500)
             dumpBytes(ptr(ptr(this.pvBuffer).readPointer()), 0x500)
         }
     })
