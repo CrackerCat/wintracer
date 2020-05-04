@@ -6,6 +6,11 @@ function hookVirtualAlloc(moduleName) {
             console.log("  dwSize: " + args[1])            
             console.log("  flAllocationType: " + args[2])
             console.log("  flProtect: " + args[3])
+            console.log("  returnAddress: " + this.returnAddress)
+            
+        },
+        onLeave: function (retval) {
+            console.log("[+] VirtualAlloc: " + retval)
         }
     })
 }
