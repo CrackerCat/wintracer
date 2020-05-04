@@ -36,21 +36,31 @@ function resolveName(dllName, name) {
 }
 
 var hookedFunctions = {}
+var addressToFunctions = {}
+var blackListedFunctions = {'I_RpcClearMutex': 1}
 
-function hookFunction(dllName, name, callback) {
-    var functionName = dllName + "!" + name
-    if (functionName in hookedFunctions) {
+function hookFunction(dllName, funcName, callback) {
+    if (funcName in blackListedFunctions) {
         return
     }
-
-    hookedFunctions[functionName] = 1
+    var symbolName = dllName + "!" + funcName
+    if (symbolName in hookedFunctions) {
+        return
+    }
+    hookedFunctions[symbolName] = 1
     
-    var addr = resolveName(dllName, name)
+    var addr = resolveName(dllName, funcName)
     if (!addr || addr.isNull()) {
         return
     }
 
-    console.log('Interceptor.attach: ' + functionName + '@' + addr);
+    if (addr in hookedFunctions) {
+        return
+    }
+    hookedFunctions[addr] = 1    
+
+    addressToFunctions[addr] = symbolName
+    console.log('Interceptor.attach: ' + symbolName + '@' + addr);
     Interceptor.attach(addr, callback)
 }
 
@@ -67,10 +77,8 @@ function loadDLLHooks(dllName) {
             return
         }
 
-        // console.log("loadDLLHooks dllName: " + dllName)
         var calls = hookMap[dllName]
         for(var i = 0 ; i < calls.length; i++) {
-            // console.log("  calls[" + i + "]: " + calls[i])
             calls[i](dllName)
         }
     }
@@ -160,10 +168,13 @@ function hookFunctionNames(moduleName, funcNames) {
         try {
             hookFunction(moduleName, funcName, {
                 onEnter: function (args) {
-                    console.log("[+] " + funcName)
+                    var name = ''
+                    if ( this.context.pc in addressToFunctions) {
+                        name = addressToFunctions[this.context.pc]
+                    }
+                    console.log("[+] " + name + " (" + this.context.pc + ")")
                 }
             })
-            console.log("Hooked " + funcName)
         } catch(err) {
             console.log("Failed to hook " + funcName)
         }
