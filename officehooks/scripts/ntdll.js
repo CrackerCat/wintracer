@@ -131,32 +131,53 @@ function hookNtConnectPort(moduleName) {
 //    +0x014 ClientViewSize   : 0
 //    +0x014 CallbackId       : 0
 
+var rpcRequestTypes = {
+    0: "RPC_REQUEST_TYPE_CALL",
+    1: "RPC_REQUEST_TYPE_BIND",
+    2: "RPC_RESPONSE_TYPE_FAIL",
+    3: "RPC_RESPONSE_TYPE_SUCCESS"
+}
+
 function dumpPortMessage(address) {
     console.log("PORT_MESSAGE @" + address)
 
     if (!address || address.isNull()) {
         return
     }
-    
+
     var dataLength = address.readUShort()
+    var totalLength = address.add(2).readUShort()
+    dumpBytes(address, 0x28)
 
-    if (dataLength == 0) {
-        return
+    if (dataLength > 0) {
+        var payloadAddress = address.add(0x28)
+        var request = payloadAddress.readULong()
+
+        var request_type_str = ""
+        if (request in rpcRequestTypes) {
+            request_type_str = rpcRequestTypes[request]
+        }
+
+        console.log("request: " + request_type_str + " (" + request + ")")
+
+        if (request == 1) {
+            var clsid = BytesToCLSID(address.add(0x34))
+            console.log("RPC CLSID: " + clsid)
+        }
+
+        dumpBytes(payloadAddress, dataLength)
     }
-
-    var dataAddress = address.add(0x18)
-    dumpBytes(dataAddress, dataLength)
 }
 
 // NTSYSCALLAPI NTSTATUS NTAPI NtAlpcSendWaitReceivePort	(
-//   _In_ HANDLE 	PortHandle,
-//   _In_ ULONG 	Flags,
+//   _In_ HANDLE PortHandle,
+//   _In_ ULONG Flags,
 //   _In_reads_bytes_opt_(SendMessage->u1.s1.TotalLength) PPORT_MESSAGE SendMessage,
-//   _Inout_opt_ PALPC_MESSAGE_ATTRIBUTES 	SendMessageAttributes,
-//   _Out_writes_bytes_to_opt_ *,*BufferLength PPORT_MESSAGE 	ReceiveMessage,
-//   _Inout_opt_ PSIZE_T 	BufferLength,
-//   _Inout_opt_ PALPC_MESSAGE_ATTRIBUTES 	ReceiveMessageAttributes,
-//   _In_opt_ PLARGE_INTEGER 	Timeout 
+//   _Inout_opt_ PALPC_MESSAGE_ATTRIBUTES SendMessageAttributes,
+//   _Out_writes_bytes_to_opt_ *(*BufferLength) PPORT_MESSAGE ReceiveMessage,
+//   _Inout_opt_ PSIZE_T BufferLength,
+//   _Inout_opt_ PALPC_MESSAGE_ATTRIBUTES ReceiveMessageAttributes,
+//   _In_opt_ PLARGE_INTEGER Timeout 
 // )
 
 function hookNtAlpcSendWaitReceivePort(moduleName) {
@@ -166,7 +187,17 @@ function hookNtAlpcSendWaitReceivePort(moduleName) {
             console.log(" PortHandle: " + args[0])
             console.log(" Flags: " + args[1])
             console.log(" SendMessage: " + args[2])
+
+            this.pReceiveMessage = args[4]
+            console.log(" pReceiveMessage: " + this.pReceiveMessage)
+            
             dumpPortMessage(ptr(args[2]))
+        },
+        onLeave: function (retval) {
+            if (this.pReceiveMessage != 0) {
+                console.log(" ReceiveMessage: " + this.pReceiveMessage)
+                dumpPortMessage(this.pReceiveMessage)
+            }
         }
     })
 }
