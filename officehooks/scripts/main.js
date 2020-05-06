@@ -35,9 +35,9 @@ var hookMap = {
         hookCoCreateInstance,
         hookCDefObjectInitFromData, 
         // hookCDefObjectLoad,
-        //  hookCDefObjectRun,
-        //  hookReadOleStg,
-        //  hookStRead,
+        // hookCDefObjectRun,
+        // hookReadOleStg,
+        // hookStRead,
         // hookOLE32Funcs
     ],
     "rpcrt4": [
@@ -49,9 +49,9 @@ var hookMap = {
         hookRpcBindingFromStringBindingA,
         hookRpcBindingFromStringBindingW,
         hookI_RpcSend,
-        hookRPCFunctions,
         hookLRPC_ADDRES_HandleRequest,
-        hookLRPC_ADDRES_AlpcSend
+        hookLRPC_ADDRES_AlpcSend,
+        // hookRPCFunctions,
     ],
     "combase": [
         hookCStdIdentityCreateServer,
