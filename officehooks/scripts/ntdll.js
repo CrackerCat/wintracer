@@ -16,13 +16,13 @@
 function hookNtAlpcConnectPort(moduleName) {
     hookFunction(moduleName, "NtAlpcConnectPort", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!NtAlpcConnectPort")
-            console.log(" pPortHandle: " + args[0])
+            log_message("[+] " + moduleName+ "!NtAlpcConnectPort")
+            log_message(" pPortHandle: " + args[0])
             this.pPortHandle = ptr(args[0])
-            console.log(" PortName: " + args[1])
+            log_message(" PortName: " + args[1])
         },
         onLeave: function (retval) {
-            console.log(" PortHandle: " + this.pPortHandle.readPointer())
+            log_message(" PortHandle: " + this.pPortHandle.readPointer())
         }
     })
 }
@@ -44,12 +44,12 @@ function hookNtAlpcConnectPort(moduleName) {
 function hookNtAlpcConnectPortEx(moduleName) {
     hookFunction(moduleName, "NtAlpcConnectPortEx", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!NtAlpcConnectPortEx")
-            console.log(" pPortHandle: " + args[0])
+            log_message("[+] " + moduleName+ "!NtAlpcConnectPortEx")
+            log_message(" pPortHandle: " + args[0])
             this.pPortHandle = ptr(args[0])
         },
         onLeave: function (retval) {
-            console.log(" PortHandle: " + this.pPortHandle.readPointer())
+            log_message(" PortHandle: " + this.pPortHandle.readPointer())
         }
     })
 }
@@ -69,12 +69,12 @@ function hookNtAlpcConnectPortEx(moduleName) {
 function hookNtAlpcAcceptConnectPort(moduleName) {
     hookFunction(moduleName, "NtAlpcAcceptConnectPort", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!NtAlpcAcceptConnectPort")
-            console.log(" pPortHandle: " + args[0])
+            log_message("[+] " + moduleName+ "!NtAlpcAcceptConnectPort")
+            log_message(" pPortHandle: " + args[0])
             this.pPortHandle = ptr(args[0])
         },
         onLeave: function (retval) {
-            console.log(" PortHandle: " + this.pPortHandle.readPointer())
+            log_message(" PortHandle: " + this.pPortHandle.readPointer())
         }
     })
 }
@@ -85,13 +85,13 @@ function hookNtAlpcAcceptConnectPort(moduleName) {
 function hookNtSecureConnectPort(moduleName) {
     hookFunction(moduleName, "NtSecureConnectPort", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!NtAlpcCNtSecureConnectPortonnectPort")
-            console.log(" pPortHandle: " + args[0])
+            log_message("[+] " + moduleName+ "!NtAlpcCNtSecureConnectPortonnectPort")
+            log_message(" pPortHandle: " + args[0])
             this.pPortHandle = ptr(args[0])
-            console.log(" PortName: " + args[1])
+            log_message(" PortName: " + args[1])
         },
         onLeave: function (retval) {
-            console.log(" PortHandle: " + this.pPortHandle.readPointer())
+            log_message(" PortHandle: " + this.pPortHandle.readPointer())
         }
     })
 }
@@ -101,13 +101,13 @@ function hookNtSecureConnectPort(moduleName) {
 function hookNtConnectPort(moduleName) {
     hookFunction(moduleName, "NtConnectPort", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!NtConnectPort")
-            console.log(" pPortHandle: " + args[0])
+            log_message("[+] " + moduleName+ "!NtConnectPort")
+            log_message(" pPortHandle: " + args[0])
             this.pPortHandle = ptr(args[0])
-            console.log(" PortName: " + args[1])
+            log_message(" PortName: " + args[1])
         },
         onLeave: function (retval) {
-            console.log(" PortHandle: " + this.pPortHandle.readPointer())
+            log_message(" PortHandle: " + this.pPortHandle.readPointer())
         }
     })
 }
@@ -139,7 +139,7 @@ var rpcRequestTypes = {
 }
 
 function dumpPortMessage(address) {
-    console.log("PORT_MESSAGE @" + address)
+    log_message("PORT_MESSAGE @" + address)
 
     if (!address || address.isNull()) {
         return
@@ -151,18 +151,25 @@ function dumpPortMessage(address) {
 
     if (dataLength > 0) {
         var payloadAddress = address.add(0x28)
-        var request = payloadAddress.readULong()
+        var request = parseInt(payloadAddress.readULong())
 
-        var request_type_str = ""
-        if (request in rpcRequestTypes) {
-            request_type_str = rpcRequestTypes[request]
+        var requestTypeString = ''
+
+        log_message("request: " + request)
+
+        try {
+            if (request in rpcRequestTypes) {
+                requestTypeString = rpcRequestTypes[request]
+            }
+        }catch (err) {
+            
         }
 
-        console.log("request: " + request_type_str + " (" + request + ")")
+        log_message("request: " + requestTypeString + " (" + request + ")")
 
         if (request == 1) {
             var clsid = BytesToCLSID(address.add(0x34))
-            console.log("RPC CLSID: " + clsid)
+            log_message("RPC CLSID: " + clsid)
         }
 
         dumpBytes(payloadAddress, dataLength)
@@ -183,22 +190,33 @@ function dumpPortMessage(address) {
 function hookNtAlpcSendWaitReceivePort(moduleName) {
     hookFunction(moduleName, "NtAlpcSendWaitReceivePort", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!NtAlpcSendWaitReceivePort")
-            console.log(" PortHandle: " + args[0])
-            console.log(" Flags: " + args[1])
-            console.log(" SendMessage: " + args[2])
+            log_message("[+] " + moduleName+ "!NtAlpcSendWaitReceivePort")
+            log_message(" PortHandle: " + args[0])
+            log_message(" Flags: " + args[1])
+            log_message(" SendMessage: " + args[2])
 
             this.pReceiveMessage = args[4]
-            console.log(" pReceiveMessage: " + this.pReceiveMessage)
+            log_message(" pReceiveMessage: " + this.pReceiveMessage)
             
             dumpPortMessage(ptr(args[2]))
         },
         onLeave: function (retval) {
             if (this.pReceiveMessage != 0) {
-                console.log(" ReceiveMessage: " + this.pReceiveMessage)
+                log_message(" ReceiveMessage: " + this.pReceiveMessage)
                 dumpPortMessage(this.pReceiveMessage)
             }
         }
     })
 }
 
+
+// ntdll!NtTerminateProcess
+
+function hookNtTerminateProcess(moduleName) {
+    hookFunction(moduleName, "NtTerminateProcess", {
+        onEnter: function (args) {
+            log_message("[+] " + moduleName+ "!NtTerminateProcess")
+            Thread.sleep(50000000)
+        }
+    })
+}
