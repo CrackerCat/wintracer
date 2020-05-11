@@ -29,15 +29,15 @@ function dumpRPCMessage(address) {
 function hookRpcBindingFromStringBindingA(moduleName) {
     hookFunction(moduleName, "RpcBindingFromStringBindingA", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!RpcBindingFromStringBindingA")
-            console.log(" StringBinding: " + ptr(args[0]).readCString())
-            console.log(" PRPC_BINDING_HANDLE: " + args[1])
+            log_message("[+] " + moduleName+ "!RpcBindingFromStringBindingA")
+            log_message(" StringBinding: " + ptr(args[0]).readCString())
+            log_message(" PRPC_BINDING_HANDLE: " + args[1])
             this.binding = args[1]
         },
         onLeave: function (retval) {
             dumpBytes(this.binding, 0x20)
             var handle = ptr(this.binding).readULong()
-            console.log(" RPC_BINDING_HANDLE: " + handle.toString(16))
+            log_message(" RPC_BINDING_HANDLE: " + handle.toString(16))
             dumpBytes(ptr(handle), 0x20)
         }
     })
@@ -51,15 +51,15 @@ function hookRpcBindingFromStringBindingA(moduleName) {
 function hookRpcBindingFromStringBindingW(moduleName) {
     hookFunction(moduleName, "RpcBindingFromStringBindingW", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!RpcBindingFromStringBindingW")
-            console.log(" StringBinding: " + ptr(args[0]).readUtf16String())
-            console.log(" PRPC_BINDING_HANDLE: " + args[1])
+            log_message("[+] " + moduleName+ "!RpcBindingFromStringBindingW")
+            log_message(" StringBinding: " + ptr(args[0]).readUtf16String())
+            log_message(" PRPC_BINDING_HANDLE: " + args[1])
             this.rpcBindingHandlePtr = args[1]
 
         },
         onLeave: function (retval) {
             var rpcBindingHandle = ptr(this.rpcBindingHandlePtr).readPointer()
-            console.log(" RPC_BINDING_HANDLE: " + rpcBindingHandle.toString(16))
+            log_message(" RPC_BINDING_HANDLE: " + rpcBindingHandle.toString(16))
             dumpBytes(rpcBindingHandle, 0x500)
         }
     })
@@ -68,16 +68,16 @@ function hookRpcBindingFromStringBindingW(moduleName) {
 function hookI_RpcBindingCreateNP(moduleName) {
     hookFunction(moduleName, "I_RpcBindingCreateNP", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!I_RpcBindingCreateNP")
-            console.log(" ServerName: " + ptr(args[0]).readUtf16String())
-            console.log(" ServiceName: " + ptr(args[1]).readUtf16String())
-            console.log(" NetworkOptions: " + ptr(args[2]).readUtf16String())
-            console.log(" PRPC_BINDING_HANDLE: " + args[3])
+            log_message("[+] " + moduleName+ "!I_RpcBindingCreateNP")
+            log_message(" ServerName: " + ptr(args[0]).readUtf16String())
+            log_message(" ServiceName: " + ptr(args[1]).readUtf16String())
+            log_message(" NetworkOptions: " + ptr(args[2]).readUtf16String())
+            log_message(" PRPC_BINDING_HANDLE: " + args[3])
             this.binding = args[3]
         },
         onLeave: function (retval) {
             dumpBytes(this.binding, 0x20)
-            console.log(" RPC_BINDING_HANDLE: " + ptr(this.binding).readULong().toString(16))
+            log_message(" RPC_BINDING_HANDLE: " + ptr(this.binding).readULong().toString(16))
         }
     })
 }
@@ -87,10 +87,10 @@ function hookI_RpcBindingCreateNP(moduleName) {
 function hookI_RpcAsyncSetHandle(moduleName) {
     hookFunction(moduleName, "I_RpcAsyncSetHandle", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!I_RpcAsyncSetHandle")
-            console.log(" Message: " + args[0])
+            log_message("[+] " + moduleName+ "!I_RpcAsyncSetHandle")
+            log_message(" Message: " + args[0])
             dumpRPCMessage(ptr(args[0]))
-            console.log(" pAsync: " + args[1])
+            log_message(" pAsync: " + args[1])
         },
         onLeave: function (retval) {
         }
@@ -117,11 +117,11 @@ function hookI_RpcAsyncSetHandle(moduleName) {
 function hookNdrServerInitialize(moduleName) {
     hookFunction(moduleName, "NdrServerInitialize", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!NdrServerInitialize")
-            console.log(" pRpcMsg: " + args[0])
+            log_message("[+] " + moduleName+ "!NdrServerInitialize")
+            log_message(" pRpcMsg: " + args[0])
             dumpRPCMessage(ptr(args[0]))
-            console.log(" pStubMsg: " + args[1])
-            console.log(" pStubDescriptor: " + args[2])   
+            log_message(" pStubMsg: " + args[1])
+            log_message(" pStubDescriptor: " + args[2])   
         },
         onLeave: function (retval) {
         }
@@ -135,14 +135,14 @@ function hookNdrServerInitialize(moduleName) {
 function hookRpcBindingInqObject(moduleName) {
     hookFunction(moduleName, "RpcBindingInqObject", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!RpcBindingInqObject")
-            console.log(" PRPC_BINDING_HANDLE: " + args[0])
-            console.log(" ObjectUuid: " + args[1])
+            log_message("[+] " + moduleName+ "!RpcBindingInqObject")
+            log_message(" PRPC_BINDING_HANDLE: " + args[0])
+            log_message(" ObjectUuid: " + args[1])
             this.pObjectUuid = ptr(args[1])
         },
         onLeave: function (retval) {
             var clsid = BytesToCLSID(ptr(this.pObjectUuid))
-            console.log(" UUID: " + clsid)            
+            log_message(" UUID: " + clsid)            
         }
     })
 }
@@ -161,11 +161,11 @@ function hookRpcBindingInqObject(moduleName) {
 function hookNdrClientInitializeNew(moduleName) {
     hookFunction(moduleName, "NdrClientInitializeNew", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!NdrClientInitializeNew")
-            console.log(" pRpcMsg: " + args[0])
-            console.log(" pStubMsg: " + args[1])
-            console.log(" pStubDescriptor: " + args[2])
-            console.log(" ProcNum: " + args[3])
+            log_message("[+] " + moduleName+ "!NdrClientInitializeNew")
+            log_message(" pRpcMsg: " + args[0])
+            log_message(" pStubMsg: " + args[1])
+            log_message(" pStubDescriptor: " + args[2])
+            log_message(" ProcNum: " + args[3])
         }
     })
 }
@@ -178,14 +178,14 @@ function hookNdrClientInitializeNew(moduleName) {
 function hookI_RpcSend(moduleName) {
     hookFunction(moduleName, "I_RpcSend", {
         onEnter: function (args) {
-            console.log("[+] I_RpcSend")
-            console.log(" args[0]: " + args[0])
+            log_message("[+] I_RpcSend")
+            log_message(" args[0]: " + args[0])
 
             var rpcBindingHandle = ptr(ptr(args[0]).readPointer())
-            console.log(" RPC_BINDING_HANDLE: " + rpcBindingHandle.toString(16))
+            log_message(" RPC_BINDING_HANDLE: " + rpcBindingHandle.toString(16))
             dumpBytes(rpcBindingHandle, 0x500)
 
-            // console.log('CallStack:\n' +
+            // log_message('CallStack:\n' +
             //     Thread.backtrace(this.context, Backtracer.ACCURATE)
             //     .map(DebugSymbol.fromAddress).join('\n') + '\n');
             
@@ -199,14 +199,14 @@ function hookI_RpcSend(moduleName) {
 function hookLRPC_SCALL_LRPC_SCALL(moduleName) {
     hookFunction(moduleName, "LRPC_SCALL::LRPC_SCALL", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!LRPC_SCALL::LRPC_SCALL")
-            console.log(" this: " + args[0])
-            console.log(" a2: " + args[1])
-            console.log(" a3: " + args[2])
-            console.log(" a4: " + args[3])
+            log_message("[+] " + moduleName+ "!LRPC_SCALL::LRPC_SCALL")
+            log_message(" this: " + args[0])
+            log_message(" a2: " + args[1])
+            log_message(" a3: " + args[2])
+            log_message(" a4: " + args[3])
         },
         onLeave: function (retval) {      
-            console.log(" RPC_BINDING_HANDLE: " + retval)
+            log_message(" RPC_BINDING_HANDLE: " + retval)
         }
     })
 }

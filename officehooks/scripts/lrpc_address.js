@@ -9,8 +9,8 @@
 function hookLRPC_ADDRES_HandleRequest(moduleName) {
     hookFunction(moduleName, "LRPC_ADDRESS::HandleRequest", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!LRPC_ADDRESS::HandleRequest")
-            console.log(" a2: " + args[0])
+            log_message("[+] " + moduleName+ "!LRPC_ADDRESS::HandleRequest")
+            log_message(" a2: " + args[0])
             dumpPortMessage(ptr(args[0]))
         },
         onLeave: function (retval) {
@@ -31,8 +31,8 @@ function hookLRPC_ADDRES_HandleRequest(moduleName) {
 function hookLRPC_ADDRES_AlpcSend(moduleName) {
     hookFunction(moduleName, "LRPC_ADDRESS::AlpcSend", {
         onEnter: function (args) {
-            console.log("[+] " + moduleName+ "!LRPC_ADDRESS::AlpcSend")
-            console.log(" a2: " + args[0])
+            log_message("[+] " + moduleName+ "!LRPC_ADDRESS::AlpcSend")
+            log_message(" a2: " + args[0])
             dumpPortMessage(ptr(args[0]))
         },
         onLeave: function (retval) {

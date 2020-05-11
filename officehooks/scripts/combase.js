@@ -5,12 +5,12 @@
 function hookCStdIdentityCreateServer(moduleName) {
     hookFunction(moduleName, "CStdIdentity::CreateServer", {
         onEnter: function (args) {
-            console.log("[+] CStdIdentity::CreateServer")
-            console.log(" this: " + args[0])
+            log_message("[+] CStdIdentity::CreateServer")
+            log_message(" this: " + args[0])
             var clsid = BytesToCLSID(ptr(args[1]))
-            console.log(" rclsid: " + clsid)
+            log_message(" rclsid: " + clsid)
             if (clsid in clsidNameMap) {
-                console.log("  " + clsidNameMap[clsid])
+                log_message("  " + clsidNameMap[clsid])
             }
 
             console.log('CStdIdentity::CreateServer called from:\n' +
@@ -33,13 +33,13 @@ function dumpPointers(address, count) {
         var symbolInformation = DebugSymbol.fromAddress(readAddress)
 
         if (symbolInformation && symbolInformation.name) {
-            console.log(currentAddress + ":\t" + readAddress + " " + symbolInformation.name)
+            log_message(currentAddress + ":\t" + readAddress + " " + symbolInformation.name)
         }else {
-            console.log(currentAddress + ":\t" + readAddress)
+            log_message(currentAddress + ":\t" + readAddress)
         }
 
         dumpBytes(readAddress, 0x30)
-        console.log("")
+        log_message("")
         currentAddress = currentAddress.add(4)
     }
 }
@@ -47,10 +47,10 @@ function dumpPointers(address, count) {
 function hookObjectStublessClient(moduleName) {
     hookFunction(moduleName, "ObjectStublessClient", {
         onEnter: function (args) {
-            console.log("[+] ObjectStublessClient")
-            console.log(" ParamAddress: " + args[0])
+            log_message("[+] ObjectStublessClient")
+            log_message(" ParamAddress: " + args[0])
             // dumpPointers(args[0], 10)
-            console.log(" Method: " + args[1])
+            log_message(" Method: " + args[1])
 
             console.log('ObjectStublessClient called from:\n' +
                 Thread.backtrace(this.context, Backtracer.ACCURATE)
@@ -75,8 +75,8 @@ function hookObjectStublessClient(moduleName) {
 function hookCRpcResolverCreateInstance(moduleName) {
     hookFunction(moduleName, "CRpcResolver::CreateInstance", {
         onEnter: function (args) {
-            console.log("[+] CRpcResolver::CreateInstance")
-            console.log(" ParamAddress: " + args[0])
+            log_message("[+] CRpcResolver::CreateInstance")
+            log_message(" ParamAddress: " + args[0])
         }
     })
 }

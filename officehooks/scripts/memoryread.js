@@ -1,18 +1,18 @@
 function dumpAddress(address)
 {
-    console.log('[+] address: ' + address);
+    log_message('[+] address: ' + address);
 
     if (address.isNull())
         return
     var data = ptr(address).readByteArray(50);
-    console.log(hexdump(data, { offset: 0, length: 50, header: true, ansi: false }));
+    log_message(hexdump(data, { offset: 0, length: 50, header: true, ansi: false }));
 }
 
 function dumpBytes(address, length) {
     if (address.isNull())
         return
     var data = ptr(address).readByteArray(length);
-    console.log(hexdump(data, { offset: 0, length: length, header: true, ansi: false }));
+    log_message(hexdump(data, { offset: 0, length: length, header: true, ansi: false }));
 }
 
 function dumpSymbols(address, count) {
@@ -26,24 +26,24 @@ function dumpSymbols(address, count) {
         var symbolInformation = DebugSymbol.fromAddress(readAddress)
 
         if (symbolInformation && symbolInformation.name) {
-            console.log(currentAddress + ":\t" + readAddress + " " + symbolInformation.name)
+            log_message(currentAddress + ":\t" + readAddress + " " + symbolInformation.name)
         }else {
-            console.log(currentAddress + ":\t" + readAddress)
+            log_message(currentAddress + ":\t" + readAddress)
         }
         currentAddress = currentAddress.add(4)
     }
 }
 
 function dumpBSTR(address) {
-    console.log('[+] address: ' + address);
+    log_message('[+] address: ' + address);
 
     if (address.isNull())
         return
 
     var length = ptr(address-4).readULong(4);
-    console.log("length: " + length)
+    log_message("length: " + length)
     var data = ptr(address).readByteArray(length);
-    console.log(hexdump(data, { offset: 0, length: length, header: true, ansi: false }));
+    log_message(hexdump(data, { offset: 0, length: length, header: true, ansi: false }));
 }
 
 function getString(address)
@@ -76,7 +76,7 @@ function getString(address)
         offset += data.length
     }
 
-    console.log("dataString: " + dataString)
+    log_message("dataString: " + dataString)
     return dataString;
 }
 
@@ -110,6 +110,6 @@ function dumpWSTR(address)
         offset += data.length
     }
 
-    console.log("dataString: " + dataString)
+    log_message("dataString: " + dataString)
     return dataString;
 }

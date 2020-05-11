@@ -9,25 +9,25 @@ function resolveName(dllName, name) {
         return resolvedAddresses[functionName]
     }
 
-    console.log("resolveName " + functionName);
-    console.log("Module.findExportByName " + dllName + " " + name);
+    log_message("resolveName " + functionName);
+    log_message("Module.findExportByName " + dllName + " " + name);
     var addr = Module.findExportByName(dllName, name)
 
     if (!addr || addr.isNull()) {
         if (!(dllName in loadedModules)) {
-            console.log(" DebugSymbol.loadModule " + dllName);
+            log_message(" DebugSymbol.loadModule " + dllName);
             var loadModuleResult = DebugSymbol.loadModule(dllName)
-            console.log(" DebugSymbol.loadModule finished: " + loadModuleResult);
+            log_message(" DebugSymbol.loadModule finished: " + loadModuleResult);
             loadedModules[dllName] = 1
         }
 
         try {
-            console.log(" DebugSymbol.getFunctionByName: " + functionName);
+            log_message(" DebugSymbol.getFunctionByName: " + functionName);
             addr = DebugSymbol.getFunctionByName(moduleName + '!' + name)
-            console.log(" DebugSymbol.getFunctionByName: addr = " + addr);
+            log_message(" DebugSymbol.getFunctionByName: addr = " + addr);
         }
         catch(err) {
-            console.log(" DebugSymbol.getFunctionByName: Exception")
+            log_message(" DebugSymbol.getFunctionByName: Exception")
         }
     }
 
@@ -60,7 +60,7 @@ function hookFunction(dllName, funcName, callback) {
     hookedFunctions[addr] = 1    
 
     addressToFunctions[addr] = symbolName
-    console.log('Interceptor.attach: ' + symbolName + '@' + addr);
+    log_message('Interceptor.attach: ' + symbolName + '@' + addr);
     Interceptor.attach(addr, callback)
 }
 
@@ -88,7 +88,7 @@ function hookLoadLibraryA(moduleName) {
     hookFunction(moduleName, "LoadLibraryA", {
         onEnter: function (args) {
             this.targetDLLName = ptr(args[0]).readCString()
-            console.log("[+] LoadLibraryA: " + this.targetDLLName)
+            log_message("[+] LoadLibraryA: " + this.targetDLLName)
         },
         onLeave: function (retval) {
             loadDLLHooks(this.targetDLLName)               
@@ -100,7 +100,7 @@ function hookLoadLibraryExA(moduleName) {
     hookFunction(moduleName, "LoadLibraryExA", {
         onEnter: function (args) {
             this.targetDLLName = ptr(args[0]).readCString()
-            console.log("[+] LoadLibraryExA: " + this.targetDLLName)
+            log_message("[+] LoadLibraryExA: " + this.targetDLLName)
         },
         onLeave: function (retval) {
             loadDLLHooks(this.targetDLLName)               
@@ -112,7 +112,7 @@ function hookLoadLibraryW(moduleName) {
     hookFunction(moduleName, "LoadLibraryW", {
         onEnter: function (args) {
             this.targetDLLName = ptr(args[0]).readUtf16String()
-            console.log("[+] LoadLibraryW: " + this.targetDLLName)            
+            log_message("[+] LoadLibraryW: " + this.targetDLLName)            
         },
         onLeave: function (retval) {
             loadDLLHooks(this.targetDLLName)               
@@ -124,7 +124,7 @@ function hookLoadLibraryExW(moduleName) {
     hookFunction(moduleName, "LoadLibraryExW", {
         onEnter: function (args) {
             this.targetDLLName = ptr(args[0]).readUtf16String()
-            console.log("[+] LoadLibraryExW: " + this.targetDLLName)            
+            log_message("[+] LoadLibraryExW: " + this.targetDLLName)            
         },
         onLeave: function (retval) {
             loadDLLHooks(this.targetDLLName)               
@@ -147,12 +147,12 @@ function hookPointers(address, count) {
             name = symbolInformation.name
         }
 
-        console.log('Hooking ' + readAddress + ": " + name)
+        log_message('Hooking ' + readAddress + ": " + name)
 
         try {
             Interceptor.attach(readAddress, {
                 onEnter: function (args) {
-                    console.log('[+] ' + name)
+                    log_message('[+] ' + name)
                 }
             })
         }
@@ -172,11 +172,11 @@ function hookFunctionNames(moduleName, funcNames) {
                     if ( this.context.pc in addressToFunctions) {
                         name = addressToFunctions[this.context.pc]
                     }
-                    console.log("[+] " + name + " (" + this.context.pc + ")")
+                    log_message("[+] " + name + " (" + this.context.pc + ")")
                 }
             })
         } catch(err) {
-            console.log("Failed to hook " + funcName)
+            log_message("Failed to hook " + funcName)
         }
     }
 }

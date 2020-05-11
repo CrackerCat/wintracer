@@ -4,12 +4,12 @@
 function hookCExposedStreamRead(moduleName) {
     hookFunction(moduleName, "CExposedStream::Read", {
         onEnter: function (args) {
-            console.log("[+] CExposedStream::Read")
-            console.log(" this: " + args[0])
-            console.log(" buffer: " + args[1])
+            log_message("[+] CExposedStream::Read")
+            log_message(" this: " + args[0])
+            log_message(" buffer: " + args[1])
             this.buffer = ptr(args[1])
-            console.log(" length: " + args[2])
-            console.log(" pLength: " + args[3])
+            log_message(" length: " + args[2])
+            log_message(" pLength: " + args[3])
             this.pLength = ptr(args[3])
 
             console.log('CExposedStream::Read called from:\n' +

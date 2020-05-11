@@ -13,3 +13,7 @@ function BytesToCLSID(address) {
 
     return clsid
 }
+
+function log_message(message) {
+    console.log(message)
+}

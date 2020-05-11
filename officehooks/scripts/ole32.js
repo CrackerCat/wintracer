@@ -37,14 +37,14 @@ function BytesToCLSID(address) {
 function hookCoCreateInstanceEx(moduleName) {
     hookFunction(moduleName, "CoCreateInstanceEx", {
         onEnter: function (args) {
-            console.log("[+] CoCreateInstanceEx")
+            log_message("[+] CoCreateInstanceEx")
             var clsid = BytesToCLSID(args[0])
-            console.log(" Clsid: " + clsid)
-            console.log(" punkOuter: " + args[1])
-            console.log(" dwClsCtx: " + args[2])
-            console.log(" pServerInfo: " + args[3])
-            console.log(" dwCount: " + args[4])
-            console.log(" pResults: " + args[5])            
+            log_message(" Clsid: " + clsid)
+            log_message(" punkOuter: " + args[1])
+            log_message(" dwClsCtx: " + args[2])
+            log_message(" pServerInfo: " + args[3])
+            log_message(" dwCount: " + args[4])
+            log_message(" pResults: " + args[5])            
         }
     })
 }
@@ -60,26 +60,26 @@ function hookCoCreateInstanceEx(moduleName) {
 function hookCoCreateInstance(moduleName) {
     hookFunction(moduleName, "CoCreateInstance", {
         onEnter: function (args) {
-            console.log("[+] CoCreateInstance")
+            log_message("[+] CoCreateInstance")
             var clsid = BytesToCLSID(args[0])
-            console.log(" Clsid: " + clsid)
+            log_message(" Clsid: " + clsid)
             this.clsid = clsid
             if (clsid in clsidNameMap) {
-                console.log("  " + clsidNameMap[clsid])
+                log_message("  " + clsidNameMap[clsid])
             }
-            console.log(" punkOuter: " + args[1])
-            console.log(" dwClsContext: " + args[2])
-            console.log(" riid: " + args[3])
-            console.log(" ppv: " + args[4])
+            log_message(" punkOuter: " + args[1])
+            log_message(" dwClsContext: " + args[2])
+            log_message(" riid: " + args[3])
+            log_message(" ppv: " + args[4])
             this.ppv = args[4]
         },
         onLeave: function (retval) {
             if (this.clsid == "{0002CE02-0000-0000-C000-000000000046}") {
-                console.log('===========================================')
+                log_message('===========================================')
                 var ppvPointer = ptr(this.ppv).readPointer()
                 dumpSymbols(ppvPointer, 5)
 
-                console.log('===========================================')
+                log_message('===========================================')
                 var currentAddress = ppvPointer
                 for(var i = 0; i < 4; i++) {
                     var ppvPointerPointer = ptr(currentAddress).readPointer()
@@ -96,12 +96,12 @@ function hookCoCreateInstance(moduleName) {
 function hookCDefObjectInitFromData(moduleName) {
     hookFunction(moduleName, "CDefObject::InitFromData", {
         onEnter: function (args) {
-            console.log("[+] CDefObject::InitFromData")
-            console.log(" this: " + args[0])
-            console.log(" pDataObject: " + args[1])
+            log_message("[+] CDefObject::InitFromData")
+            log_message(" this: " + args[0])
+            log_message(" pDataObject: " + args[1])
             dumpBytes(ptr(args[1]), 0x100)
-            console.log(" fCreation: " + args[2])
-            console.log(" dwReserved: " + args[3])
+            log_message(" fCreation: " + args[2])
+            log_message(" dwReserved: " + args[3])
         }
     })
 }
@@ -111,9 +111,9 @@ function hookCDefObjectInitFromData(moduleName) {
 function hookCDefObjectLoad(moduleName) {
     hookFunction(moduleName, "CDefObject::Load", {
         onEnter: function (args) {
-            console.log("[+] CDefObject::Load")
-            console.log(" this: " + args[0])
-            console.log(" pstg: " + args[1])
+            log_message("[+] CDefObject::Load")
+            log_message(" this: " + args[0])
+            log_message(" pstg: " + args[1])
             dumpBytes(ptr(args[1]), 0x500)
         }
     })
@@ -124,9 +124,9 @@ function hookCDefObjectLoad(moduleName) {
 function hookCDefObjectRun(moduleName) {
     hookFunction(moduleName, "CDefObject::Run", {
         onEnter: function (args) {
-            console.log("[+] CDefObject::Run")
-            console.log(" this: " + args[0])
-            console.log(" pbc: " + args[1])
+            log_message("[+] CDefObject::Run")
+            log_message(" this: " + args[0])
+            log_message(" pbc: " + args[1])
             dumpBytes(ptr(args[1]), 0x500)
         }
     })
@@ -143,13 +143,13 @@ function hookCDefObjectRun(moduleName) {
 function hookReadOleStg(moduleName) {
     hookFunction(moduleName, "ReadOleStg", {
         onEnter: function (args) {
-            console.log("[+] ReadOleStg")
-            console.log(" pstg: " + args[0])
-            console.log(" pdwFlags: " + args[1])
-            console.log(" pdwOptUpdate: " + args[2])
-            console.log(" pdwReserved: " + args[3])
-            console.log(" ppmk: " + args[4])
-            console.log(" ppstmOut: " + args[5])
+            log_message("[+] ReadOleStg")
+            log_message(" pstg: " + args[0])
+            log_message(" pdwFlags: " + args[1])
+            log_message(" pdwOptUpdate: " + args[2])
+            log_message(" pdwReserved: " + args[3])
+            log_message(" ppmk: " + args[4])
+            log_message(" ppstmOut: " + args[5])
         }
     })
 }
@@ -165,13 +165,13 @@ function hookReadOleStg(moduleName) {
 function hookStRead(moduleName) {
     hookFunction(moduleName, "StRead", {
         onEnter: function (args) {
-            console.log("[+] StRead")           
+            log_message("[+] StRead")           
             var pStm = this.context['ecx']
             this.pvBuffer = this.context['edx']
             this.ulcb = args[0]
-            console.log(" pStm: " + pStm)
-            console.log(" pvBuffer: " + this.pvBuffer)
-            console.log(" ulcb: " + this.ulcb)
+            log_message(" pStm: " + pStm)
+            log_message(" pvBuffer: " + this.pvBuffer)
+            log_message(" ulcb: " + this.ulcb)
         },
         onLeave: function (retval) {
             // dumpBytes(ptr(this.pvBuffer), 0x500)
