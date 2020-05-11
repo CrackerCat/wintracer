@@ -15,9 +15,12 @@ var hookMap = {
         hookLoadLibraryExW,
         hookCreateProcessW,
         hookCreateProcessA,
+        hookCreateFileW,
+        hookWriteFile,
+        hookWriteFileEx,
+        hookMoveFile,
         // hookReadFile,
         // hookVirtualAlloc,
-        // hookCreateFileW,
     ],
     'kernelbase.dll': [
         hookLoadLibraryA,
@@ -26,9 +29,12 @@ var hookMap = {
         hookLoadLibraryExW,
         hookCreateProcessW,
         hookCreateProcessA,
+        hookCreateFileW,
+        hookWriteFile,
+        hookWriteFileEx,
+        hookMoveFile,
         // hookReadFile,
         // hookVirtualAlloc,
-        // hookCreateFileW,
     ],
     'ole32': [
         hookCoCreateInstanceEx,
@@ -68,11 +74,23 @@ var hookMap = {
         hookNtAlpcConnectPortEx,
         hookNtConnectPort,
         hookNtAlpcAcceptConnectPort,
-        hookNtAlpcSendWaitReceivePort
+        hookNtAlpcSendWaitReceivePort,
+        hookNtTerminateProcess
+    ]
+}
+
+
+var hookMap = {
+
+    'kernel32.dll': [
+        hookVirtualProtect,
+    ],
+    'kernelbase.dll': [
+        hookVirtualProtect,
     ]
 }
 
 for(var dllName in hookMap) {
-    console.log("dllName: " + dllName)
+    log_message("dllName: " + dllName)
     loadDLLHooks(dllName)
 }
